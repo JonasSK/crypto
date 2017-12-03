@@ -1,0 +1,33 @@
+language: node_js
+
+node_js: 8
+
+script:
+
+cache:
+  directories:
+    - "node_modules"
+
+notifications:
+  email: false
+
+jobs:
+  include:
+    - stage: test
+      script: npm test
+    - stage: deploy
+      script:
+        - npm run build
+        - echo "crypto.niklask.dk" >> dist/CNAME
+      deploy:
+        provider: pages
+        skip_cleanup: true
+        github_token: $GITHUB_TOKEN
+        local_dir: dist
+        on:
+          branch: master
+
+stages:
+  - test
+  - name: deploy
+    if: branch = master
