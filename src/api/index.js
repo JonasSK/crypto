@@ -1,29 +1,43 @@
 import axios from "axios";
 
 const client = axios.create({
-  baseURL: "https://coincap.io/",
+    baseURL: "https://api.coinmarketcap.com/v1",
 });
 
 export default {
-  async getCoin(id) {
-    if (!id) {
-      throw new Error("Id missing");
-    }
+    async getCoin(id, convert) {
+        const params = {}
+        if(convert) {
+            params.convert = convert;
+        }
 
-    try {
-      const res = await client.get(`page/${id}`);
-      return res.data;
-    } catch (err) {
-      throw err;
-    }
-  },
+        if (!id) {
+            throw new Error("Id missing");
+        }
 
-  async getAllCoins() {
-    try {
-      const res = await client.get("front");
-      return res.data;
-    } catch (err) {
-      throw err;
-    }
-  },
+
+
+        try {
+            const res = await client.get(`/ticker/${id}`, { params: params });
+            return res.data;
+        } catch (err) {
+            throw err;
+        }
+    },
+
+    async getAllCoins(convert) {
+        try {
+            const params = {
+                limit: 0
+            }
+            if(convert) {
+                params.convert = convert;
+            }
+
+            const res = await client.get("/ticker/", { params: params });
+            return res.data;
+        } catch (err) {
+            throw err;
+        }
+    },
 };
